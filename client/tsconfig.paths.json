@@ -1,11 +1,13 @@
 {
   "compilerOptions": {
     "paths": {
+      "@/constants/*": ["src/constants/*"],
       "@/components/*": [
         "src/components/*"
       ],
       "@/pages/*": ["src/pages/*"],
-      "@/routes/*": ["src/routes/*"]
+      "@/routes/*": ["src/routes/*"],
+      "@/utils/*": ["src/utils/*"]
     }
   }
 }
