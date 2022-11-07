@@ -1,14 +1,30 @@
 import React from "react";
-import { Button, TextField } from "@mui/material";
+import { Button, Link, TextField } from "@mui/material";
 import styled from "@emotion/styled";
 import { Controller, useForm } from "react-hook-form";
 import { EMAIL, PASSWORD, PASSWORD_CONFIRM } from "@/constants/name";
 import { RegexUtil } from "@/utils/regex";
+import { useMutation } from "@tanstack/react-query";
+import axios from "axios";
+import { useNavigate } from "react-router-dom";
+import { TOKEN } from "@/constants/common";
 
 interface FormData {
   email: string;
   password: string;
   passwordConfirm: string;
+}
+
+interface SignUpVariable {
+  email: string;
+  password: string;
+}
+
+interface SignUpResponse {
+  data: {
+    message: string;
+    token: string;
+  };
 }
 
 function SignUp() {
@@ -22,10 +38,32 @@ function SignUp() {
     defaultValues,
     mode: "onChange",
   });
+
   const { errors, isValid } = formState;
+  const navigate = useNavigate();
+
+  const mutation = useMutation<
+    SignUpResponse,
+    unknown,
+    SignUpVariable,
+    unknown
+  >({
+    mutationFn: (variables) => {
+      return axios.post("http://localhost:8080/users/create", variables);
+    },
+    onSuccess: (response) => {
+      console.log(response?.data, "data");
+      localStorage.setItem(TOKEN, response?.data?.token);
+      alert("회원가입에 성공했습니다.");
+      navigate("/");
+    },
+  });
 
   const onSubmit = (data: FormData) => {
-    console.log(data);
+    mutation.mutate({
+      [EMAIL]: data[EMAIL],
+      [PASSWORD]: data[PASSWORD],
+    });
   };
 
   return (
@@ -97,6 +135,7 @@ function SignUp() {
         >
           SignUp
         </Button>
+        <Link href={"/auth/login"}>Already Have an account?</Link>
       </StyledSignUp>
     </form>
   );
