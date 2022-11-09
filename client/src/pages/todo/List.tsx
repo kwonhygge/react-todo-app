@@ -13,11 +13,11 @@ import {
   Edit,
 } from "@mui/icons-material";
 import { useMutation, useQuery } from "@tanstack/react-query";
-import axios from "axios";
 import dayjs from "dayjs";
 import { Controller, useForm } from "react-hook-form";
 import { CONTENT, TITLE } from "@/constants/name";
 import { useLocation } from "react-router";
+import { instance } from "@/libs/index";
 
 interface FormData {
   create: {
@@ -73,8 +73,6 @@ function List() {
     mode: "onChange",
   });
 
-  const token = localStorage.getItem(TOKEN);
-
   const { data: todoListData, refetch } = useQuery<
     unknown,
     unknown,
@@ -82,13 +80,7 @@ function List() {
   >({
     queryKey: ["todoList"],
     queryFn: async () => {
-      const response = await axios.get("http://localhost:8080/todos", {
-        headers: {
-          Authorization: token,
-        },
-      });
-
-      return response?.data?.data;
+      return instance.get("/todos");
     },
   });
 
@@ -97,16 +89,7 @@ function List() {
     queryFn: async () => {
       if (!queryData) return;
 
-      const response = await axios.get(
-        `http://localhost:8080/todos/${queryData.id}`,
-        {
-          headers: {
-            Authorization: token,
-          },
-        }
-      );
-
-      return response?.data?.data;
+      return instance.get(`/todos/${queryData.id}`);
     },
     enabled: false,
   });
@@ -118,11 +101,7 @@ function List() {
     unknown
   >({
     mutationFn: (variables) => {
-      return axios.post("http://localhost:8080/todos", variables, {
-        headers: {
-          Authorization: token,
-        },
-      });
+      return instance.post("/todos", variables);
     },
     onSuccess: () => {
       refetch();
@@ -132,11 +111,7 @@ function List() {
 
   const deleteMutation = useMutation<unknown, unknown, string, unknown>({
     mutationFn: (url) => {
-      return axios.delete(url, {
-        headers: {
-          Authorization: token,
-        },
-      });
+      return instance.delete(url);
     },
     onSuccess: () => {
       refetch();
@@ -151,18 +126,10 @@ function List() {
     unknown
   >({
     mutationFn: (variables) => {
-      return axios.put(
-        variables.url,
-        {
-          title: variables[TITLE],
-          content: variables[CONTENT],
-        },
-        {
-          headers: {
-            Authorization: token,
-          },
-        }
-      );
+      return instance.put(variables.url, {
+        title: variables[TITLE],
+        content: variables[CONTENT],
+      });
     },
     onSuccess: () => {
       setEditingId("");
@@ -182,14 +149,14 @@ function List() {
 
   const onSubmitEdit = (data: FormData) => {
     editMutation.mutate({
-      url: `http://localhost:8080/todos/${editingIdState}`,
+      url: `/todos/${editingIdState}`,
       [TITLE]: data.edit[TITLE],
       [CONTENT]: data.edit[CONTENT],
     });
   };
 
   const handleClickDelete = (id: string) => {
-    deleteMutation.mutate(`http://localhost:8080/todos/${id}`);
+    deleteMutation.mutate(`/todos/${id}`);
   };
 
   const handleClickEdit = (item: TodoListItem) => {
