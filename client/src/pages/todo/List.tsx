@@ -12,12 +12,18 @@ import {
   Delete,
   Edit,
 } from "@mui/icons-material";
-import { useMutation, useQuery } from "@tanstack/react-query";
 import dayjs from "dayjs";
 import { Controller, useForm } from "react-hook-form";
 import { CONTENT, TITLE } from "@/constants/name";
 import { useLocation } from "react-router";
-import { instance } from "@/libs/index";
+import {
+  useCreateTodoItem,
+  useDeleteTodoItem,
+  useEditTodoItem,
+  useGetTodoList,
+  useGetTodoListItem,
+} from "@/hooks/apis";
+import { TodoItemData } from "@/interfaces/common";
 
 interface FormData {
   create: {
@@ -28,25 +34,6 @@ interface FormData {
     title: string;
     content: string;
   };
-}
-
-interface TodoListItem {
-  title: string;
-  content: string;
-  id: string;
-  createdAt: Date;
-  updatedAt: Date;
-}
-
-interface CreateTodoVariables {
-  title: string;
-  content: string;
-}
-
-interface EditTodoVariables {
-  url: string;
-  title: string;
-  content: string;
 }
 
 function List() {
@@ -73,93 +60,56 @@ function List() {
     mode: "onChange",
   });
 
-  const { data: todoListData, refetch } = useQuery<
-    unknown,
-    unknown,
-    TodoListItem[]
-  >({
-    queryKey: ["todoList"],
-    queryFn: async () => {
-      return instance.get("/todos");
-    },
-  });
-
-  const { data: todoItemData } = useQuery<unknown, unknown, TodoListItem>({
-    queryKey: ["todoItem"],
-    queryFn: async () => {
-      if (!queryData) return;
-
-      return instance.get(`/todos/${queryData.id}`);
-    },
-    enabled: false,
-  });
-
-  const createMutation = useMutation<
-    unknown,
-    unknown,
-    CreateTodoVariables,
-    unknown
-  >({
-    mutationFn: (variables) => {
-      return instance.post("/todos", variables);
-    },
-    onSuccess: () => {
-      refetch();
-      reset();
-    },
-  });
-
-  const deleteMutation = useMutation<unknown, unknown, string, unknown>({
-    mutationFn: (url) => {
-      return instance.delete(url);
-    },
-    onSuccess: () => {
-      refetch();
-      reset();
-    },
-  });
-
-  const editMutation = useMutation<
-    unknown,
-    unknown,
-    EditTodoVariables,
-    unknown
-  >({
-    mutationFn: (variables) => {
-      return instance.put(variables.url, {
-        title: variables[TITLE],
-        content: variables[CONTENT],
-      });
-    },
-    onSuccess: () => {
-      setEditingId("");
-      refetch();
-      reset();
-    },
-  });
+  const { data: todoListData, refetch } = useGetTodoList();
+  const { data: todoItemData } = useGetTodoListItem(queryData);
+  const { mutate: createTodoItemMutate } = useCreateTodoItem();
+  const { mutate: editTodoItemMutate } = useEditTodoItem();
+  const { mutate: deleteTodoItemMutate } = useDeleteTodoItem();
 
   const isEditing = (id: string) => id === editingIdState;
 
   const onSubmitCreate = (data: FormData) => {
-    createMutation.mutate({
-      [TITLE]: data.create[TITLE],
-      [CONTENT]: data.create[CONTENT],
-    });
+    createTodoItemMutate(
+      {
+        [TITLE]: data.create[TITLE],
+        [CONTENT]: data.create[CONTENT],
+      },
+      {
+        onSuccess: () => {
+          refetch();
+          reset();
+        },
+      }
+    );
   };
 
   const onSubmitEdit = (data: FormData) => {
-    editMutation.mutate({
-      url: `/todos/${editingIdState}`,
-      [TITLE]: data.edit[TITLE],
-      [CONTENT]: data.edit[CONTENT],
-    });
+    editTodoItemMutate(
+      {
+        url: `/todos/${editingIdState}`,
+        [TITLE]: data.edit[TITLE],
+        [CONTENT]: data.edit[CONTENT],
+      },
+      {
+        onSuccess: () => {
+          setEditingId("");
+          refetch();
+          reset();
+        },
+      }
+    );
   };
 
   const handleClickDelete = (id: string) => {
-    deleteMutation.mutate(`/todos/${id}`);
+    deleteTodoItemMutate(`/todos/${id}`, {
+      onSuccess: () => {
+        refetch();
+        reset();
+      },
+    });
   };
 
-  const handleClickEdit = (item: TodoListItem) => {
+  const handleClickEdit = (item: TodoItemData) => {
     setEditingId(item.id);
 
     reset(
@@ -240,7 +190,7 @@ function List() {
                     </div>
                     <IconButton
                       onClick={() =>
-                        handleClickEdit(todoItemData as TodoListItem)
+                        handleClickEdit(todoItemData as TodoItemData)
                       }
                     >
                       <Edit />

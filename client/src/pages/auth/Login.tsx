@@ -4,26 +4,13 @@ import styled from "@emotion/styled";
 import { Controller, useForm } from "react-hook-form";
 import { EMAIL, PASSWORD } from "@/constants/name";
 import { RegexUtil } from "@/utils/regex";
-import { useMutation } from "@tanstack/react-query";
-import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { TOKEN } from "@/constants/common";
+import { useLogin } from "@/hooks/apis";
 
 interface FormData {
   email: string;
   password: string;
-}
-
-interface LoginVariable {
-  email: string;
-  password: string;
-}
-
-interface LoginResponse {
-  data: {
-    message: string;
-    token: string;
-  };
 }
 
 function Login() {
@@ -32,26 +19,17 @@ function Login() {
     password: "",
   };
 
+  const navigate = useNavigate();
+
   const { control, formState, handleSubmit } = useForm({
     defaultValues,
     mode: "onChange",
   });
   const { errors, isValid } = formState;
-  const navigate = useNavigate();
-
-  const mutation = useMutation<LoginResponse, unknown, LoginVariable, unknown>({
-    mutationFn: (variables) => {
-      return axios.post("http://localhost:8080/users/login", variables);
-    },
-    onSuccess: (response) => {
-      localStorage.setItem("token", response?.data.token);
-      alert("로그인에 성공했습니다.");
-      navigate("/");
-    },
-  });
+  const { mutate } = useLogin();
 
   const onSubmit = (data: FormData) => {
-    mutation.mutate({
+    mutate({
       [EMAIL]: data[EMAIL],
       [PASSWORD]: data[PASSWORD],
     });
