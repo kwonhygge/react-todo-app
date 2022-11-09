@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import QueryString from "qs";
 import { DATE_FORMAT, TOKEN } from "@/constants/common";
 import styled from "@emotion/styled";
-import { IconButton, TextField } from "@mui/material";
+import { IconButton, Link, TextField } from "@mui/material";
 import {
   ArrowDropDown,
   AddCircle,
@@ -238,6 +238,7 @@ function List() {
           <AddCircle color={"primary"} />
         </IconButton>
       </StyledList>
+      <Link href={"/auth/logout"}>Logout</Link>
     </form>
   );
 }
