@@ -31,6 +31,7 @@ import {
   useGetTodoListItem,
 } from "@/hooks/apis";
 import { TodoItemData } from "@/interfaces/common";
+import { withProtection } from "@/hocs/index";
 
 interface FormData {
   create: {
@@ -129,14 +130,6 @@ function List() {
       { keepDefaultValues: true }
     );
   };
-
-  useEffect(() => {
-    const token = localStorage.getItem(TOKEN);
-
-    if (!token) {
-      navigate(LOGIN_URL);
-    }
-  }, []);
 
   return (
     <form>
@@ -250,7 +243,7 @@ function List() {
   );
 }
 
-export default List;
+export default withProtection(List);
 
 const StyledList = styled.div`
   width: fit-content;

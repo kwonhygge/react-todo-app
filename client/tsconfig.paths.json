@@ -10,6 +10,7 @@
       "@/utils/*": ["src/utils/*"],
       "@/libs/*": ["src/libs/*"],
       "@/hooks/*": ["src/hooks/*"],
+      "@/hocs/*": ["src/hocs/*"],
       "@/interfaces/*": ["src/interfaces/*"]
     }
   }
