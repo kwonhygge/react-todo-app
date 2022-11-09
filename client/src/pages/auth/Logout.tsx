@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { TOKEN } from "@/constants/common";
+import { MAIN_URL, TOKEN } from "@/constants/index";
 
 function Logout() {
   const navigate = useNavigate();
@@ -10,7 +10,7 @@ function Logout() {
 
     if (!!token) {
       localStorage.removeItem(TOKEN);
-      navigate("/");
+      navigate(MAIN_URL);
     }
   }, []);
 

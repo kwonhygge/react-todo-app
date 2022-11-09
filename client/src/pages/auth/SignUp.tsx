@@ -2,7 +2,12 @@ import React from "react";
 import { Button, Link, TextField } from "@mui/material";
 import styled from "@emotion/styled";
 import { Controller, useForm } from "react-hook-form";
-import { EMAIL, PASSWORD, PASSWORD_CONFIRM } from "@/constants/name";
+import {
+  EMAIL,
+  PASSWORD,
+  PASSWORD_CONFIRM,
+  LOGIN_URL,
+} from "@/constants/index";
 import { RegexUtil } from "@/utils/regex";
 import { useSignUp } from "@/hooks/apis";
 
@@ -104,7 +109,7 @@ function SignUp() {
         >
           SignUp
         </Button>
-        <Link href={"/auth/login"}>Already Have an account?</Link>
+        <Link href={LOGIN_URL}>Already Have an account?</Link>
       </StyledSignUp>
     </form>
   );

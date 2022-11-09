@@ -1,7 +1,15 @@
 import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import QueryString from "qs";
-import { DATE_FORMAT, TOKEN } from "@/constants/common";
+import {
+  CONTENT,
+  TITLE,
+  DATE_FORMAT,
+  TOKEN,
+  TODOS_API_URL,
+  LOGIN_URL,
+  LOGOUT_URL,
+} from "@/constants/index";
 import styled from "@emotion/styled";
 import { IconButton, Link, TextField } from "@mui/material";
 import {
@@ -14,7 +22,6 @@ import {
 } from "@mui/icons-material";
 import dayjs from "dayjs";
 import { Controller, useForm } from "react-hook-form";
-import { CONTENT, TITLE } from "@/constants/name";
 import { useLocation } from "react-router";
 import {
   useCreateTodoItem,
@@ -86,7 +93,7 @@ function List() {
   const onSubmitEdit = (data: FormData) => {
     editTodoItemMutate(
       {
-        url: `/todos/${editingIdState}`,
+        url: `${TODOS_API_URL}/${editingIdState}`,
         [TITLE]: data.edit[TITLE],
         [CONTENT]: data.edit[CONTENT],
       },
@@ -101,7 +108,7 @@ function List() {
   };
 
   const handleClickDelete = (id: string) => {
-    deleteTodoItemMutate(`/todos/${id}`, {
+    deleteTodoItemMutate(`${TODOS_API_URL}/${id}`, {
       onSuccess: () => {
         refetch();
         reset();
@@ -127,7 +134,7 @@ function List() {
     const token = localStorage.getItem(TOKEN);
 
     if (!token) {
-      navigate("/auth/login");
+      navigate(LOGIN_URL);
     }
   }, []);
 
@@ -238,7 +245,7 @@ function List() {
           <AddCircle color={"primary"} />
         </IconButton>
       </StyledList>
-      <Link href={"/auth/logout"}>Logout</Link>
+      <Link href={LOGOUT_URL}>Logout</Link>
     </form>
   );
 }

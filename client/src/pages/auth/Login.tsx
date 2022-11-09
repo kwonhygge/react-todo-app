@@ -2,11 +2,16 @@ import React, { useEffect } from "react";
 import { Button, Link, TextField } from "@mui/material";
 import styled from "@emotion/styled";
 import { Controller, useForm } from "react-hook-form";
-import { EMAIL, PASSWORD } from "@/constants/name";
 import { RegexUtil } from "@/utils/regex";
 import { useNavigate } from "react-router-dom";
-import { TOKEN } from "@/constants/common";
 import { useLogin } from "@/hooks/apis";
+import {
+  EMAIL,
+  PASSWORD,
+  MAIN_URL,
+  TOKEN,
+  SIGN_UP_URL,
+} from "@/constants/index";
 
 interface FormData {
   email: string;
@@ -39,7 +44,7 @@ function Login() {
     const token = localStorage.getItem(TOKEN);
 
     if (!!token) {
-      navigate("/");
+      navigate(MAIN_URL);
     }
   }, []);
 
@@ -91,7 +96,7 @@ function Login() {
         >
           Login
         </Button>
-        <Link href={"/auth/signup"}>If you don't have account, click here</Link>
+        <Link href={SIGN_UP_URL}>If you don't have account, click here</Link>
       </StyledLogin>
     </form>
   );
