@@ -11,7 +11,8 @@
       "@/libs/*": ["src/libs/*"],
       "@/hooks/*": ["src/hooks/*"],
       "@/hocs/*": ["src/hocs/*"],
-      "@/interfaces/*": ["src/interfaces/*"]
+      "@/interfaces/*": ["src/interfaces/*"],
+      "@/styles/*": ["src/styles/*"]
     }
   }
 }
