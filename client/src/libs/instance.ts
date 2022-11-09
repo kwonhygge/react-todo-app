@@ -1,8 +1,6 @@
 import axios from "axios";
 import { TOKEN } from "@/constants/common";
 
-const token = localStorage.getItem(TOKEN);
-
 const instance = axios.create({
   baseURL: "http://localhost:8080",
   timeout: 1000,
@@ -11,6 +9,7 @@ const instance = axios.create({
 instance.interceptors.request.use(
   function (config) {
     config.headers = config.headers ?? {};
+    const token = localStorage.getItem(TOKEN);
 
     if (!!token) {
       config.headers["Authorization"] = token;
@@ -28,7 +27,7 @@ instance.interceptors.request.use(
 
 instance.interceptors.response.use(
   function (response) {
-    return response.data.data;
+    return response.data;
   },
   function (error) {
     return Promise.reject(error);

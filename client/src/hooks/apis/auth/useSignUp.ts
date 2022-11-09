@@ -18,10 +18,10 @@ export const useSignUp = () => {
 
   return useMutation<SignUpResponse, unknown, SignUpVariable, unknown>({
     mutationFn: (variables) => {
-      return instance.post("users/create", variables);
+      return instance.post("/users/create", variables);
     },
     onSuccess: (data) => {
-      localStorage.setItem(TOKEN, data?.token);
+      localStorage.setItem(TOKEN, data.token);
       alert("회원가입에 성공했습니다.");
       navigate("/");
     },

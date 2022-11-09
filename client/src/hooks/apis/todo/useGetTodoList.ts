@@ -6,6 +6,7 @@ export const useGetTodoList = () =>
   useQuery<unknown, unknown, TodoItemData[]>({
     queryKey: ["todoList"],
     queryFn: async () => {
-      return instance.get("/todos");
+      const data = await instance.get("/todos");
+      return data.data;
     },
   });

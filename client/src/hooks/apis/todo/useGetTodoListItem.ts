@@ -9,7 +9,8 @@ export const useGetTodoListItem = (queryData: QueryString.ParsedQs) =>
     queryFn: async () => {
       if (!queryData) return;
 
-      return instance.get(`/todos/${queryData.id}`);
+      const data = await instance.get(`/todos/${queryData.id}`);
+      return data.data;
     },
     enabled: false,
   });
