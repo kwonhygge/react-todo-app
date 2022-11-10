@@ -1,5 +1,6 @@
 import { useNavigate } from "react-router-dom";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import _ from "lodash";
 import QueryString from "qs";
 import {
   CONTENT,
@@ -69,6 +70,7 @@ function List() {
     ignoreQueryPrefix: true,
   });
 
+  const [openItemIdState, setOpenItemId] = useState("");
   const [editingIdState, setEditingId] = useState("");
 
   const { control, handleSubmit, reset } = useForm({
@@ -79,13 +81,14 @@ function List() {
   const { data: todoListData, refetch: refetchTodoList } = useGetTodoList();
 
   const { data: todoItemData, refetch: refetchTodoItem } =
-    useGetTodoListItem(queryData);
+    useGetTodoListItem(openItemIdState);
 
   const { mutate: createTodoItemMutate } = useCreateTodoItem();
   const { mutate: editTodoItemMutate } = useEditTodoItem();
   const { mutate: deleteTodoItemMutate } = useDeleteTodoItem();
 
   const isEditing = (id: string) => id === editingIdState;
+  const isOpen = (id: string) => id === openItemIdState;
 
   const onSubmitCreate = (data: FormData) => {
     createTodoItemMutate(
@@ -144,9 +147,7 @@ function List() {
   };
 
   const handleClickListItemButton = async (item: TodoItemData) => {
-    const isOpen = queryData.id === item.id;
-
-    if (isOpen) {
+    if (isOpen(item.id)) {
       navigate(TODO_LIST_URL);
     } else {
       navigate(`${TODO_LIST_URL}?id=${item.id}`);
@@ -205,28 +206,37 @@ function List() {
     </StyledCollapseItem>
   );
 
+  useEffect(() => {
+    (async () => {
+      if (_.isEmpty(queryData)) {
+        setOpenItemId("");
+      } else {
+        if (!!queryData?.id) {
+          setOpenItemId(queryData?.id as string);
+          await refetchTodoItem();
+        }
+      }
+    })();
+  }, [queryData]);
+
   return (
     <form>
       <StyledList>
         <h2>Todo List</h2>
         <ListContainer>
-          {todoListData?.map((item) => {
-            const isOpen = queryData.id === item.id;
-
-            return (
-              <div key={item.id}>
-                <ListItemButton onClick={() => handleClickListItemButton(item)}>
-                  <h3>{item.title}</h3>
-                  {isOpen ? <ArrowDropUp /> : <ArrowDropDown />}
-                </ListItemButton>
-                <Collapse in={isOpen} timeout="auto" unmountOnExit>
-                  {isEditing(item.id)
-                    ? renderEditingTodoInputs()
-                    : renderTodoDetail()}
-                </Collapse>
-              </div>
-            );
-          })}
+          {todoListData?.map((item) => (
+            <div key={item.id}>
+              <ListItemButton onClick={() => handleClickListItemButton(item)}>
+                <h3>{item.title}</h3>
+                {isOpen(item.id) ? <ArrowDropUp /> : <ArrowDropDown />}
+              </ListItemButton>
+              <Collapse in={isOpen(item.id)} timeout="auto" unmountOnExit>
+                {isEditing(item.id)
+                  ? renderEditingTodoInputs()
+                  : renderTodoDetail()}
+              </Collapse>
+            </div>
+          ))}
         </ListContainer>
         <Controller
           control={control}

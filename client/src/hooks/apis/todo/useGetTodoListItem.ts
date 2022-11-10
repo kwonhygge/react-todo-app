@@ -1,17 +1,16 @@
 import { useQuery } from "@tanstack/react-query";
 import { TodoItemData } from "@/interfaces/common";
 import { instance } from "@/libs/index";
-import QueryString from "qs";
 import { TODOS_API_URL } from "@/constants/index";
 
-export const useGetTodoListItem = (queryData: QueryString.ParsedQs) =>
+export const useGetTodoListItem = (id: string) =>
   useQuery<unknown, unknown, TodoItemData>({
     queryKey: ["todoItem"],
     queryFn: async () => {
-      if (!queryData) return;
+      if (!id) return null;
 
-      const data = await instance.get(`${TODOS_API_URL}/${queryData.id}`);
+      const data = await instance.get(`${TODOS_API_URL}/${id}`);
       return data.data;
     },
-    enabled: !!queryData?.id,
+    enabled: !!id,
   });
