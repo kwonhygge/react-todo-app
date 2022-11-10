@@ -1,19 +1,26 @@
 import { useNavigate } from "react-router-dom";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import QueryString from "qs";
 import {
   CONTENT,
   TITLE,
   DATE_FORMAT,
-  TOKEN,
   TODOS_API_URL,
-  LOGIN_URL,
   LOGOUT_URL,
+  TODO_LIST_URL,
 } from "@/constants/index";
 import styled from "@emotion/styled";
-import { IconButton, Link, TextField } from "@mui/material";
+import {
+  Collapse,
+  IconButton,
+  Link,
+  TextField,
+  List as ListContainer,
+  ListItemButton,
+} from "@mui/material";
 import {
   ArrowDropDown,
+  ArrowDropUp,
   AddCircle,
   Check,
   Clear,
@@ -61,6 +68,7 @@ function List() {
   const queryData = QueryString.parse(location.search, {
     ignoreQueryPrefix: true,
   });
+
   const [editingIdState, setEditingId] = useState("");
 
   const { control, handleSubmit, reset } = useForm({
@@ -68,8 +76,11 @@ function List() {
     mode: "onChange",
   });
 
-  const { data: todoListData, refetch } = useGetTodoList();
-  const { data: todoItemData } = useGetTodoListItem(queryData);
+  const { data: todoListData, refetch: refetchTodoList } = useGetTodoList();
+
+  const { data: todoItemData, refetch: refetchTodoItem } =
+    useGetTodoListItem(queryData);
+
   const { mutate: createTodoItemMutate } = useCreateTodoItem();
   const { mutate: editTodoItemMutate } = useEditTodoItem();
   const { mutate: deleteTodoItemMutate } = useDeleteTodoItem();
@@ -83,8 +94,8 @@ function List() {
         [CONTENT]: data.create[CONTENT],
       },
       {
-        onSuccess: () => {
-          refetch();
+        onSuccess: async () => {
+          await refetchTodoList();
           reset();
         },
       }
@@ -99,9 +110,10 @@ function List() {
         [CONTENT]: data.edit[CONTENT],
       },
       {
-        onSuccess: () => {
+        onSuccess: async () => {
           setEditingId("");
-          refetch();
+          await refetchTodoList();
+          await refetchTodoItem();
           reset();
         },
       }
@@ -110,8 +122,8 @@ function List() {
 
   const handleClickDelete = (id: string) => {
     deleteTodoItemMutate(`${TODOS_API_URL}/${id}`, {
-      onSuccess: () => {
-        refetch();
+      onSuccess: async () => {
+        await refetchTodoList();
         reset();
       },
     });
@@ -131,83 +143,91 @@ function List() {
     );
   };
 
+  const handleClickListItemButton = async (item: TodoItemData) => {
+    const isOpen = queryData.id === item.id;
+
+    if (isOpen) {
+      navigate(TODO_LIST_URL);
+    } else {
+      navigate(`${TODO_LIST_URL}?id=${item.id}`);
+    }
+  };
+
+  const renderEditingTodoInputs = () => (
+    <StyledCollapseItem>
+      <Controller
+        control={control}
+        render={({ field: { name, onChange, value } }) => (
+          <TextField
+            label={name}
+            name={name}
+            onChange={onChange}
+            placeholder={name}
+            value={value}
+          />
+        )}
+        name={"edit.title"}
+      />
+      <Controller
+        control={control}
+        render={({ field: { name, onChange, value } }) => (
+          <TextField
+            label={name}
+            name={name}
+            onChange={onChange}
+            placeholder={name}
+            value={value}
+          />
+        )}
+        name={"edit.content"}
+      />
+      <IconButton onClick={handleSubmit(onSubmitEdit)}>
+        <Check />
+      </IconButton>
+      <IconButton onClick={() => setEditingId("")}>
+        <Clear />
+      </IconButton>
+    </StyledCollapseItem>
+  );
+
+  const renderTodoDetail = () => (
+    <StyledCollapseItem>
+      <div>
+        <p>{todoItemData?.content}</p>
+        <span>{dayjs(todoItemData?.createdAt).format(DATE_FORMAT)}</span>
+      </div>
+      <IconButton onClick={() => handleClickEdit(todoItemData as TodoItemData)}>
+        <Edit />
+      </IconButton>
+      <IconButton onClick={() => handleClickDelete(todoItemData?.id as string)}>
+        <Delete />
+      </IconButton>
+    </StyledCollapseItem>
+  );
+
   return (
     <form>
       <StyledList>
         <h2>Todo List</h2>
-        <ul>
-          {todoListData?.map((item) =>
-            isEditing(item.id) ? (
-              <li key={item.id}>
-                <Controller
-                  control={control}
-                  render={({ field: { name, onChange, value } }) => (
-                    <TextField
-                      label={name}
-                      name={name}
-                      onChange={onChange}
-                      placeholder={name}
-                      value={value}
-                    />
-                  )}
-                  name={"edit.title"}
-                />
-                <Controller
-                  control={control}
-                  render={({ field: { name, onChange, value } }) => (
-                    <TextField
-                      label={name}
-                      name={name}
-                      onChange={onChange}
-                      placeholder={name}
-                      value={value}
-                    />
-                  )}
-                  name={"edit.content"}
-                />
-                <IconButton onClick={handleSubmit(onSubmitEdit)}>
-                  <Check />
-                </IconButton>
-                <IconButton onClick={() => setEditingId("")}>
-                  <Clear />
-                </IconButton>
-              </li>
-            ) : (
-              <li key={item.id}>
-                <h3>{item.title}</h3>
-                <IconButton
-                  onClick={() => navigate(`/todo/list?id=${item.id}`)}
-                >
-                  <ArrowDropDown />
-                </IconButton>
-                {queryData.id === item.id && (
-                  <>
-                    <div>
-                      <p>{todoItemData?.content}</p>
-                      <span>
-                        {dayjs(todoItemData?.createdAt).format(DATE_FORMAT)}
-                      </span>
-                    </div>
-                    <IconButton
-                      onClick={() =>
-                        handleClickEdit(todoItemData as TodoItemData)
-                      }
-                    >
-                      <Edit />
-                    </IconButton>
-                    <IconButton
-                      onClick={() =>
-                        handleClickDelete(todoItemData?.id as string)
-                      }
-                    >
-                      <Delete />
-                    </IconButton>
-                  </>
-                )}
-              </li>
-            )
-          )}
-        </ul>
+        <ListContainer>
+          {todoListData?.map((item) => {
+            const isOpen = queryData.id === item.id;
+
+            return (
+              <div key={item.id}>
+                <ListItemButton onClick={() => handleClickListItemButton(item)}>
+                  <h3>{item.title}</h3>
+                  {isOpen ? <ArrowDropUp /> : <ArrowDropDown />}
+                </ListItemButton>
+                <Collapse in={isOpen} timeout="auto" unmountOnExit>
+                  {isEditing(item.id)
+                    ? renderEditingTodoInputs()
+                    : renderTodoDetail()}
+                </Collapse>
+              </div>
+            );
+          })}
+        </ListContainer>
         <Controller
           control={control}
           render={({ field: { name, onChange, value } }) => (
@@ -248,4 +268,8 @@ export default withProtection(List);
 const StyledList = styled.div`
   width: fit-content;
   margin: 0 auto;
+`;
+
+const StyledCollapseItem = styled.div`
+  padding: 1rem;
 `;

@@ -13,5 +13,5 @@ export const useGetTodoListItem = (queryData: QueryString.ParsedQs) =>
       const data = await instance.get(`${TODOS_API_URL}/${queryData.id}`);
       return data.data;
     },
-    enabled: false,
+    enabled: !!queryData?.id,
   });
