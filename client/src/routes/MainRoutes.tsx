@@ -1,5 +1,5 @@
 import { Route, Routes } from "react-router-dom";
-import { TodoList, Login, SignUp, Main, Logout } from "@/pages/index";
+import { TodoList, Login, SignUp, Main, Logout, NotFound } from "@/pages/index";
 import {
   LOGIN_URL,
   LOGOUT_URL,
@@ -17,6 +17,7 @@ function MainRoutes() {
         <Route path={LOGIN_URL} element={<Login />} />
         <Route path={SIGN_UP_URL} element={<SignUp />} />
         <Route path={LOGOUT_URL} element={<Logout />} />
+        <Route path={"*"} element={<NotFound />} />
       </Routes>
     </>
   );
