@@ -207,10 +207,10 @@ function List() {
         )}
         name={"edit.content"}
       />
-      <IconButton onClick={handleSubmit(onSubmitEdit)}>
+      <IconButton aria-label={"confirm"} onClick={handleSubmit(onSubmitEdit)}>
         <Check />
       </IconButton>
-      <IconButton onClick={() => setEditingId("")}>
+      <IconButton aria-label={"cancel"} onClick={() => setEditingId("")}>
         <Clear />
       </IconButton>
     </StyledCollapseItem>
@@ -222,10 +222,16 @@ function List() {
         <p>{todoItemData?.content}</p>
         <span>{dayjs(todoItemData?.createdAt).format(DATE_FORMAT)}</span>
       </div>
-      <IconButton onClick={() => handleClickEdit(todoItemData as TodoItemData)}>
+      <IconButton
+        aria-label={"edit"}
+        onClick={() => handleClickEdit(todoItemData as TodoItemData)}
+      >
         <Edit />
       </IconButton>
-      <IconButton onClick={() => handleClickDelete(todoItemData?.id as string)}>
+      <IconButton
+        aria-label={"delete"}
+        onClick={() => handleClickDelete(todoItemData?.id as string)}
+      >
         <Delete />
       </IconButton>
     </StyledCollapseItem>
@@ -289,7 +295,7 @@ function List() {
           )}
           name={"create.content"}
         />
-        <IconButton onClick={handleSubmit(onSubmitCreate)}>
+        <IconButton aria-label={"add"} onClick={handleSubmit(onSubmitCreate)}>
           <AddCircle color={"primary"} />
         </IconButton>
       </StyledList>
