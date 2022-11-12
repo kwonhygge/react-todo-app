@@ -146,7 +146,7 @@ function List() {
     );
   };
 
-  const handleClickListItemButton = async (item: TodoItemData) => {
+  const handleToggleListItemButton = async (item: TodoItemData) => {
     if (isOpen(item.id)) {
       navigate(TODO_LIST_URL);
     } else {
@@ -226,7 +226,7 @@ function List() {
         <ListContainer>
           {todoListData?.map((item) => (
             <div key={item.id}>
-              <ListItemButton onClick={() => handleClickListItemButton(item)}>
+              <ListItemButton onClick={() => handleToggleListItemButton(item)}>
                 <h3>{item.title}</h3>
                 {isOpen(item.id) ? <ArrowDropUp /> : <ArrowDropDown />}
               </ListItemButton>
