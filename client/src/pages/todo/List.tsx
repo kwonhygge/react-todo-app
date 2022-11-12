@@ -40,6 +40,8 @@ import {
 } from "@/hooks/apis";
 import { TodoItemData } from "@/interfaces/common";
 import { withProtection } from "@/hocs/index";
+import { useSetRecoilState } from "recoil";
+import { snackbarProps } from "@/atoms/snackbar";
 
 interface FormData {
   create: {
@@ -65,6 +67,7 @@ function List() {
   };
   const navigate = useNavigate();
   const location = useLocation();
+  const setSnackbarProps = useSetRecoilState(snackbarProps);
 
   const queryData = QueryString.parse(location.search, {
     ignoreQueryPrefix: true,
@@ -99,6 +102,13 @@ function List() {
       {
         onSuccess: async () => {
           await refetchTodoList();
+
+          setSnackbarProps((prev) => ({
+            ...prev,
+            open: true,
+            message: "✅ 새로운 아이템이 추가되었습니다.",
+          }));
+
           reset();
         },
       }
@@ -117,6 +127,13 @@ function List() {
           setEditingId("");
           await refetchTodoList();
           await refetchTodoItem();
+
+          setSnackbarProps((prev) => ({
+            ...prev,
+            open: true,
+            message: "✅ 아이템이 수정되었습니다.",
+          }));
+
           reset();
         },
       }
@@ -126,7 +143,15 @@ function List() {
   const handleClickDelete = (id: string) => {
     deleteTodoItemMutate(`${TODOS_API_URL}/${id}`, {
       onSuccess: async () => {
+        window.location.reload();
         await refetchTodoList();
+
+        setSnackbarProps((prev) => ({
+          ...prev,
+          open: true,
+          message: "✅ 아이템이 삭제되었습니다.",
+        }));
+
         reset();
       },
     });

@@ -2,6 +2,8 @@ import { useMutation } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
 import { instance } from "@/libs/index";
 import { MAIN_URL, TOKEN, LOGIN_API_URL } from "@/constants/index";
+import { useSetRecoilState } from "recoil";
+import { snackbarProps } from "@/atoms/snackbar";
 
 interface LoginVariable {
   email: string;
@@ -15,6 +17,7 @@ interface LoginResponse {
 
 export const useLogin = () => {
   const navigate = useNavigate();
+  const setSnackbarProps = useSetRecoilState(snackbarProps);
 
   return useMutation<LoginResponse, unknown, LoginVariable, unknown>({
     mutationFn: (variables) => {
@@ -22,7 +25,13 @@ export const useLogin = () => {
     },
     onSuccess: (data) => {
       localStorage.setItem(TOKEN, data.token);
-      alert("로그인에 성공했습니다.");
+
+      setSnackbarProps((prev) => ({
+        ...prev,
+        open: true,
+        message: "✅ 로그인에 성공하였습니다.",
+      }));
+
       navigate(MAIN_URL);
     },
   });
