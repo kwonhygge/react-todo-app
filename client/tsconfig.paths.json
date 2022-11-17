@@ -1,0 +1,19 @@
+{
+  "compilerOptions": {
+    "paths": {
+      "@/constants/*": ["src/constants/*"],
+      "@/components/*": [
+        "src/components/*"
+      ],
+      "@/atoms/*": ["src/atoms/*"],
+      "@/pages/*": ["src/pages/*"],
+      "@/routes/*": ["src/routes/*"],
+      "@/utils/*": ["src/utils/*"],
+      "@/libs/*": ["src/libs/*"],
+      "@/hooks/*": ["src/hooks/*"],
+      "@/hocs/*": ["src/hocs/*"],
+      "@/interfaces/*": ["src/interfaces/*"],
+      "@/styles/*": ["src/styles/*"]
+    }
+  }
+}
