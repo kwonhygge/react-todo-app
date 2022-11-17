@@ -7,9 +7,13 @@ import {
   PASSWORD,
   PASSWORD_CONFIRM,
   LOGIN_URL,
+  MAIN_URL,
 } from "@/constants/index";
 import { RegexUtil } from "@/utils/regex";
 import { useSignUp } from "@/hooks/apis";
+import { useSetRecoilState } from "recoil";
+import { snackbarProps } from "@/atoms/snackbar";
+import { useNavigate } from "react-router-dom";
 
 interface FormData {
   email: string;
@@ -31,13 +35,29 @@ function SignUp() {
 
   const { errors, isValid } = formState;
 
+  const navigate = useNavigate();
+  const setSnackbarProps = useSetRecoilState(snackbarProps);
+
   const { mutate } = useSignUp();
 
   const onSubmit = (data: FormData) => {
-    mutate({
-      [EMAIL]: data[EMAIL],
-      [PASSWORD]: data[PASSWORD],
-    });
+    mutate(
+      {
+        [EMAIL]: data[EMAIL],
+        [PASSWORD]: data[PASSWORD],
+      },
+      {
+        onSuccess: () => {
+          setSnackbarProps((prev) => ({
+            ...prev,
+            open: true,
+            message: "✅ 회원가입에 성공하였습니다.",
+          }));
+
+          navigate(MAIN_URL);
+        },
+      }
+    );
   };
 
   return (

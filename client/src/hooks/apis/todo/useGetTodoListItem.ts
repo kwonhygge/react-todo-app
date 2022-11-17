@@ -5,11 +5,12 @@ import { TODOS_API_URL } from "@/constants/index";
 
 export const useGetTodoListItem = (id: string) =>
   useQuery<unknown, unknown, TodoItemData>({
-    queryKey: ["todoItem"],
+    queryKey: ["todos", id],
     queryFn: async () => {
       if (!id) return null;
 
       const data = await instance.get(`${TODOS_API_URL}/${id}`);
+
       return data.data;
     },
     enabled: !!id,
