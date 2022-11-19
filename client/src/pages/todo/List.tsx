@@ -124,8 +124,8 @@ function List() {
           )}
           name={"create.content"}
         />
-        <IconButton aria-label={"add"} onClick={handleSubmit(onSubmitCreate)}>
-          <AddCircle color={"primary"} />
+        <IconButton aria-label="create" onClick={handleSubmit(onSubmitCreate)}>
+          <AddCircle color="primary" />
         </IconButton>
       </StyledList>
       <Outlet />

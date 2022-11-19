@@ -104,7 +104,7 @@ function Login() {
                 label={name}
                 name={name}
                 onChange={onChange}
-                type={"password"}
+                type="password"
                 error={!!errors?.[name]}
                 value={value}
               />
@@ -117,7 +117,7 @@ function Login() {
         />
         <Button
           disabled={!isValid}
-          variant={"contained"}
+          variant="contained"
           onClick={handleSubmit(onSubmit)}
         >
           Login

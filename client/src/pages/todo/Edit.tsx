@@ -92,11 +92,11 @@ function Edit() {
         name={"edit.content"}
       />
 
-      <IconButton aria-label={"confirm"} onClick={handleSubmit(onSubmitEdit)}>
+      <IconButton aria-label="confirm" onClick={handleSubmit(onSubmitEdit)}>
         <Check />
       </IconButton>
       <IconButton
-        aria-label={"cancel"}
+        aria-label="cancel"
         onClick={() => navigate(`${TODO_LIST_URL}/${params?.id}`)}
       >
         <Clear />
