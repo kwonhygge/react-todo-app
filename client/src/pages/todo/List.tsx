@@ -71,6 +71,15 @@ function List() {
 
           reset();
         },
+        onError: (error) => {
+          if (!!error?.response) {
+            setSnackbarProps((prev) => ({
+              ...prev,
+              open: true,
+              message: `🚫 ${error?.response?.data?.details}`,
+            }));
+          }
+        },
       }
     );
   };

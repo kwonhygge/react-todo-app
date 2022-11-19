@@ -15,9 +15,6 @@ const client = new QueryClient({
       retry: 0,
       useErrorBoundary: true,
     },
-    mutations: {
-      useErrorBoundary: true,
-    },
   },
 });
 

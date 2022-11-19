@@ -23,7 +23,7 @@ function Detail() {
 
   const handleClickDelete = (id: string) => {
     deleteTodoItemMutate(`${TODOS_API_URL}/${id}`, {
-      onSuccess: async () => {
+      onSuccess: () => {
         navigate(TODO_LIST_URL);
 
         setSnackbarProps((prev) => ({
@@ -31,6 +31,15 @@ function Detail() {
           open: true,
           message: "✅ 아이템이 삭제되었습니다.",
         }));
+      },
+      onError: (error) => {
+        if (!!error.response) {
+          setSnackbarProps((prev) => ({
+            ...prev,
+            open: true,
+            message: `🚫 ${error?.response?.data?.details}`,
+          }));
+        }
       },
     });
   };

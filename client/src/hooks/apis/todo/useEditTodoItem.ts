@@ -2,6 +2,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { instance } from "@/libs/index";
 import { CONTENT, TITLE } from "@/constants/name";
 import { TODOS_API_URL } from "@/constants/endpoint";
+import { AxiosError } from "axios";
 
 interface EditTodoItemVariables {
   title: string;
@@ -11,7 +12,11 @@ interface EditTodoItemVariables {
 export const useEditTodoItem = (id: string) => {
   const queryClient = useQueryClient();
 
-  return useMutation<unknown, unknown, EditTodoItemVariables, unknown>({
+  return useMutation<
+    unknown,
+    AxiosError<{ details: string }>,
+    EditTodoItemVariables
+  >({
     mutationFn: (variables) => {
       return instance.put(`${TODOS_API_URL}/${id}`, {
         title: variables[TITLE],
@@ -22,5 +27,7 @@ export const useEditTodoItem = (id: string) => {
       queryClient.invalidateQueries(["todos", id]);
       queryClient.invalidateQueries(["todos"]);
     },
+    useErrorBoundary: (error) =>
+      !!error.response ? error.response?.status >= 500 : false,
   });
 };

@@ -27,7 +27,7 @@ function Edit() {
         [CONTENT]: data.edit[CONTENT],
       },
       {
-        onSuccess: async () => {
+        onSuccess: () => {
           setSnackbarProps((prev) => ({
             ...prev,
             open: true,
@@ -35,6 +35,15 @@ function Edit() {
           }));
 
           navigate(`${TODO_LIST_URL}/${params?.id}`);
+        },
+        onError: (error) => {
+          if (!!error.response) {
+            setSnackbarProps((prev) => ({
+              ...prev,
+              open: true,
+              message: `🚫 ${error?.response?.data?.details}`,
+            }));
+          }
         },
       }
     );

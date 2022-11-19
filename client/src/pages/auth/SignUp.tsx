@@ -56,6 +56,15 @@ function SignUp() {
 
           navigate(MAIN_URL);
         },
+        onError: (error) => {
+          if (!!error?.response) {
+            setSnackbarProps((prev) => ({
+              ...prev,
+              open: true,
+              message: `🚫 ${error?.response?.data?.details}`,
+            }));
+          }
+        },
       }
     );
   };
