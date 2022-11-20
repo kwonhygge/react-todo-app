@@ -13,6 +13,8 @@ import {
   TODO_LIST_URL,
 } from "@/constants/index";
 import { todoListLoader, logoutLoader, mainLoader } from "@/routes/index";
+import { Skeleton } from "@mui/material";
+import React from "react";
 
 const router = createBrowserRouter([
   {
@@ -41,7 +43,15 @@ const router = createBrowserRouter([
           { path: TODO_CREATE_URL, element: <Create /> },
           {
             path: TODO_DETAIL_URL,
-            element: <Detail />,
+            element: (
+              <React.Suspense
+                fallback={
+                  <Skeleton variant="rectangular" width={300} height={220} />
+                }
+              >
+                <Detail />
+              </React.Suspense>
+            ),
             children: [
               {
                 path: TODO_DELETE_DETAIL_URL,

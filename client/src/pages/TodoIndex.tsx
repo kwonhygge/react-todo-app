@@ -1,10 +1,11 @@
 import { LOGOUT_URL, TODO_CREATE_URL } from "@/constants/index";
 import styled from "@emotion/styled";
-import { IconButton, Link, Grid } from "@mui/material";
+import { IconButton, Link, Grid, Skeleton } from "@mui/material";
 import { AddCircle } from "@mui/icons-material";
 import { useForm, FormProvider } from "react-hook-form";
 import { List } from "@/components/index";
 import { useNavigate } from "react-router-dom";
+import React from "react";
 
 interface FormData {
   title: string;
@@ -46,7 +47,11 @@ function TodoIndex() {
         <IconButton aria-label="create" onClick={handleClickCreate}>
           <AddCircle color="primary" />
         </IconButton>
-        <List />
+        <React.Suspense
+          fallback={<Skeleton variant="rectangular" width={400} height={300} />}
+        >
+          <List />
+        </React.Suspense>
       </StyledIndex>
     </FormProvider>
   );
