@@ -12,11 +12,13 @@ export const useGetTodoListItem = (id: string) => {
   return useQuery<unknown, AxiosError<{ details: string }>, TodoItemData>({
     queryKey: ["todos", id],
     queryFn: async () => {
-      if (!id) return null;
+      try {
+        const data = await instance.get(`${TODOS_API_URL}/${id}`);
 
-      const data = await instance.get(`${TODOS_API_URL}/${id}`);
-
-      return data.data;
+        return data.data;
+      } catch (error) {
+        throw error;
+      }
     },
     onError: (error) => {
       if (!!error?.response) {
