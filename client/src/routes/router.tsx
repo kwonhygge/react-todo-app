@@ -1,19 +1,12 @@
 import { createBrowserRouter } from "react-router-dom";
-import {
-  TodoList,
-  Login,
-  SignUp,
-  ErrorPage,
-  Edit,
-  Detail,
-  Delete,
-  Root,
-} from "@/pages/index";
+import { Login, SignUp, ErrorPage, Root, TodoIndex } from "@/pages/index";
+import { Create, Edit, Detail, Delete } from "@/components/index";
 import {
   LOGIN_URL,
   LOGOUT_URL,
   MAIN_URL,
   SIGN_UP_URL,
+  TODO_CREATE_URL,
   TODO_DELETE_DETAIL_URL,
   TODO_DETAIL_URL,
   TODO_EDIT_DETAIL_URL,
@@ -42,9 +35,10 @@ const router = createBrowserRouter([
       },
       {
         path: TODO_LIST_URL,
-        element: <TodoList />,
+        element: <TodoIndex />,
         loader: todoListLoader,
         children: [
+          { path: TODO_CREATE_URL, element: <Create /> },
           {
             path: TODO_DETAIL_URL,
             element: <Detail />,
@@ -53,12 +47,11 @@ const router = createBrowserRouter([
                 path: TODO_DELETE_DETAIL_URL,
                 element: <Delete />,
               },
+              {
+                path: TODO_EDIT_DETAIL_URL,
+                element: <Edit />,
+              },
             ],
-          },
-
-          {
-            path: TODO_EDIT_DETAIL_URL,
-            element: <Edit />,
           },
         ],
       },

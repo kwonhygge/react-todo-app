@@ -1,13 +1,12 @@
-import { Controller, FieldValues, useFormContext } from "react-hook-form";
-import { IconButton, TextField } from "@mui/material";
+import { FieldValues, useFormContext } from "react-hook-form";
 import { CONTENT, TITLE } from "@/constants/name";
 import { useEditTodoItem, useGetTodoListItem } from "@/hooks/apis";
-import { Check, Clear } from "@mui/icons-material";
 import { useSetRecoilState } from "recoil";
 import { snackbarProps } from "@/atoms/snackbar";
 import { useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { TODO_LIST_URL } from "@/constants/url";
+import { Form } from "@/components/todo/index";
 
 function Edit() {
   const params = useParams();
@@ -15,16 +14,16 @@ function Edit() {
 
   const setSnackbarProps = useSetRecoilState(snackbarProps);
 
-  const { control, handleSubmit, reset } = useFormContext();
+  const { reset } = useFormContext();
 
   const { data: todoItemData } = useGetTodoListItem(params?.id || "");
   const { mutate: editTodoItemMutate } = useEditTodoItem(params?.id || "");
 
-  const onSubmitEdit = (data: FieldValues) => {
+  const handleSubmitEdit = (data: FieldValues) => {
     editTodoItemMutate(
       {
-        [TITLE]: data.edit[TITLE],
-        [CONTENT]: data.edit[CONTENT],
+        [TITLE]: data[TITLE],
+        [CONTENT]: data[CONTENT],
       },
       {
         onSuccess: () => {
@@ -49,14 +48,17 @@ function Edit() {
     );
   };
 
+  const handleCancelEdit = () => {
+    reset();
+    navigate(`${TODO_LIST_URL}/${params?.id}`);
+  };
+
   useEffect(() => {
     if (!!todoItemData) {
       reset(
         {
-          edit: {
-            [TITLE]: todoItemData[TITLE],
-            [CONTENT]: todoItemData[CONTENT],
-          },
+          [TITLE]: todoItemData[TITLE],
+          [CONTENT]: todoItemData[CONTENT],
         },
         { keepDefaultValues: true }
       );
@@ -64,44 +66,7 @@ function Edit() {
   }, [todoItemData]);
 
   return (
-    <form>
-      <Controller
-        control={control}
-        render={({ field: { name, onChange, value } }) => (
-          <TextField
-            label={name}
-            name={name}
-            onChange={onChange}
-            placeholder={name}
-            value={value}
-          />
-        )}
-        name={"edit.title"}
-      />
-      <Controller
-        control={control}
-        render={({ field: { name, onChange, value } }) => (
-          <TextField
-            label={name}
-            name={name}
-            onChange={onChange}
-            placeholder={name}
-            value={value}
-          />
-        )}
-        name={"edit.content"}
-      />
-
-      <IconButton aria-label="confirm" onClick={handleSubmit(onSubmitEdit)}>
-        <Check />
-      </IconButton>
-      <IconButton
-        aria-label="cancel"
-        onClick={() => navigate(`${TODO_LIST_URL}/${params?.id}`)}
-      >
-        <Clear />
-      </IconButton>
-    </form>
+    <Form handleConfirm={handleSubmitEdit} handleCancel={handleCancelEdit} />
   );
 }
 

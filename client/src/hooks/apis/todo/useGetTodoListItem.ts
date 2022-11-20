@@ -29,6 +29,7 @@ export const useGetTodoListItem = (id: string) => {
         }));
       }
     },
+    suspense: true,
     useErrorBoundary: (error) =>
       !!error.response ? error.response?.status >= 500 : false,
     enabled: !!id,
