@@ -2,7 +2,6 @@ import React from "react";
 import ReactDOM from "react-dom/client";
 import App from "./App";
 import reportWebVitals from "./reportWebVitals";
-import { BrowserRouter } from "react-router-dom";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { RecoilRoot } from "recoil";
 
@@ -15,9 +14,7 @@ const client = new QueryClient({
     queries: {
       retry: 0,
       useErrorBoundary: true,
-    },
-    mutations: {
-      useErrorBoundary: true,
+      suspense: true,
     },
   },
 });
@@ -26,9 +23,7 @@ root.render(
   <React.StrictMode>
     <QueryClientProvider client={client}>
       <RecoilRoot>
-        <BrowserRouter>
-          <App />
-        </BrowserRouter>
+        <App />
       </RecoilRoot>
     </QueryClientProvider>
   </React.StrictMode>

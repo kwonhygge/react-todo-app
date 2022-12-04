@@ -12,6 +12,8 @@ import {
   TOKEN,
   SIGN_UP_URL,
 } from "@/constants/index";
+import { useSetRecoilState } from "recoil";
+import { snackbarProps } from "@/atoms/snackbar";
 
 interface FormData {
   email: string;
@@ -24,6 +26,7 @@ function Login() {
     password: "",
   };
 
+  const setSnackbarProps = useSetRecoilState(snackbarProps);
   const navigate = useNavigate();
 
   const { control, formState, handleSubmit } = useForm({
@@ -35,10 +38,32 @@ function Login() {
   const { mutate } = useLogin();
 
   const onSubmit = (data: FormData) => {
-    mutate({
-      [EMAIL]: data[EMAIL],
-      [PASSWORD]: data[PASSWORD],
-    });
+    mutate(
+      {
+        [EMAIL]: data[EMAIL],
+        [PASSWORD]: data[PASSWORD],
+      },
+      {
+        onSuccess: () => {
+          setSnackbarProps((prev) => ({
+            ...prev,
+            open: true,
+            message: "✅ 로그인에 성공하였습니다.",
+          }));
+
+          navigate(MAIN_URL);
+        },
+        onError: (error) => {
+          if (!!error?.response) {
+            setSnackbarProps((prev) => ({
+              ...prev,
+              open: true,
+              message: `🚫 ${error?.response?.data?.details}`,
+            }));
+          }
+        },
+      }
+    );
   };
 
   useEffect(() => {
@@ -79,7 +104,7 @@ function Login() {
                 label={name}
                 name={name}
                 onChange={onChange}
-                type={"password"}
+                type="password"
                 error={!!errors?.[name]}
                 value={value}
               />
@@ -92,7 +117,7 @@ function Login() {
         />
         <Button
           disabled={!isValid}
-          variant={"contained"}
+          variant="contained"
           onClick={handleSubmit(onSubmit)}
         >
           Login

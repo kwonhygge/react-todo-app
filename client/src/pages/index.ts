@@ -1,4 +1,4 @@
-export { Login, SignUp, Logout } from "./auth";
-export { TodoList } from "./todo";
-export { default as Main } from "./Main";
-export { default as NotFound } from "./NotFound";
+export { Login, SignUp } from "./auth";
+export { default as ErrorPage } from "./Error";
+export { default as Root } from "./Root";
+export { default as TodoIndex } from "./TodoIndex";
