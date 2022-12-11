@@ -65,7 +65,7 @@ npm start
 
 
 
-### 폴더 구조
+## 폴더 구조
 ```
 ├── App.tsx
 ├── atoms
