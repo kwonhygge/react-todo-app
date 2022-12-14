@@ -29,18 +29,9 @@ react query를 공부하고 여러 차례 리팩토링하여 더 좋은 퀄리�
 <div id='id-section2'/>
 
 ## 🎒 프로젝트 설치 및 실행
-```
-npm install
-```
-
-```
-// 클라이언트
-cd client
-npm start
-
-// 서버
-cd server
-npm start
+```sh
+$ yarn install
+$ yarn start
 ```
 
 <div id='id-section3'/>
